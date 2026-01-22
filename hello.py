@@ -21,7 +21,7 @@ import threading
 # Set your Sentry DSN as an environment variable: SENTRY_DSN
 # Or replace the default value below with your actual DSN
 
-SENTRY_DSN = os.getenv("SENTRY_DSN", "")  # Add your DSN here or set env var
+SENTRY_DSN = os.getenv("SENTRY_DSN", "https://2749c2d817b29ffda63bc190e9294cc3@sehr.ngrok.io/4510755321085952")  # Add your DSN here or set env var
 
 # Configure logging integration
 logging_integration = LoggingIntegration(
