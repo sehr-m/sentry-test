@@ -86,7 +86,7 @@ try:
 except Exception as e:
     logger.warning(f"CouchDB not configured: {e}")
 
-port = int(os.getenv("PORT", 8000))
+port = int(os.getenv("PORT", 5000))
 
 
 # =============================================================================

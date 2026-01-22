@@ -43,7 +43,7 @@ python hello.py
 docker build -t sentry-test .
 
 # Run with Sentry DSN
-docker run -p 8000:8000 -e SENTRY_DSN="your-dsn-here" sentry-test
+docker run -p 5000:5000 -e SENTRY_DSN="your-dsn-here" sentry-test
 ```
 
 ### Option 3: Docker Compose
@@ -56,7 +56,7 @@ docker-compose up
 SENTRY_DSN="your-dsn-here" docker-compose up
 ```
 
-Then open http://localhost:8000 in your browser.
+Then open http://localhost:5000 in your browser.
 
 ## Configuration
 
@@ -67,7 +67,7 @@ Set these environment variables:
 | `SENTRY_DSN` | Your Sentry DSN | `""` (required for backend) |
 | `SENTRY_ENVIRONMENT` | Environment name | `development` |
 | `SENTRY_RELEASE` | Release version | `sentry-test@1.0.0` |
-| `PORT` | Server port | `8000` |
+| `PORT` | Server port | `5000` |
 | `COUCHDB_USER` | CouchDB username | (optional) |
 | `COUCHDB_PASSWORD` | CouchDB password | (optional) |
 
@@ -128,7 +128,7 @@ Set these environment variables:
 
 ## Frontend Usage
 
-1. Open http://localhost:8000 in your browser
+1. Open http://localhost:5000 in your browser
 2. Enter your Sentry DSN in the input field at the top
 3. Click "Initialize Sentry" to connect
 4. Click any button to trigger errors/events
