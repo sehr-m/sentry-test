@@ -1,121 +1,1329 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Hello World</title>
+    <title>🔥 Sentry Test Console</title>
 
-    <!-- Bootstrap -->
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.messagestore.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.fallbacks.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.language.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.parser.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.emitter.js"></script>
-    <script src="js/lib/jquery.i18n/jquery.i18n.emitter.bidi.js"></script>
-    <script src="antixss.js" type="text/javascript"></script>
+    <!-- Sentry Browser SDK -->
+    <script
+        src="https://browser.sentry-cdn.com/7.99.0/bundle.tracing.replay.min.js"
+        crossorigin="anonymous"
+    ></script>
 
-    <script>
-        $( document ).ready(function() {
-            $.i18n().load( {
-                en: {
-                    "welcome": "Welcome.",
-                    "name": "name",
-                    "what_is_your_name": "What is your name?",
-                    "hello": "Hello $1",
-                    "added_to_database": "Hello $1, I've added you to the database!",
-                    "database_contents": "Database contents: "
-                },
-                ja: {
-                    "welcome": "ようこそ。",
-                    "name": "名前",
-                    "what_is_your_name": "お名前を教えてください。",
-                    "hello": "こんにちは $1",
-                    "added_to_database": "こんにちは $1 さん、あなたをデータベースに追加しました。",
-                    "database_contents": "データベースの内容: "
-                }
-            } );
-            $('body').i18n();
-            $('#user_name').attr("placeholder", $.i18n('name') );
-        });
-        </script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0d1117;
+            --bg-secondary: #161b22;
+            --bg-tertiary: #21262d;
+            --border-color: #30363d;
+            --text-primary: #e6edf3;
+            --text-secondary: #8b949e;
+            --accent-red: #f85149;
+            --accent-orange: #f0883e;
+            --accent-yellow: #d29922;
+            --accent-green: #3fb950;
+            --accent-blue: #58a6ff;
+            --accent-purple: #a371f7;
+            --accent-pink: #db61a2;
+            --gradient-1: linear-gradient(135deg, #f85149 0%, #f0883e 50%, #d29922 100%);
+            --gradient-2: linear-gradient(135deg, #58a6ff 0%, #a371f7 100%);
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
 
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* Background pattern */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(248, 81, 73, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(88, 166, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(163, 113, 247, 0.05) 0%, transparent 70%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+
+        /* Status Badge */
+        .status-bar {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            animation: blink 1.5s infinite;
+        }
+
+        .status-dot.connected { background: var(--accent-green); }
+        .status-dot.disconnected { background: var(--accent-red); }
+        .status-dot.pending { background: var(--accent-yellow); }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Sections */
+        .section {
+            background: var(--bg-secondary);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .section-icon {
+            font-size: 1.5rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-left: auto;
+        }
+
+        /* Grid Layout */
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-error {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .btn-error:hover { background: #da3633; }
+
+        .btn-warning {
+            background: var(--accent-orange);
+            color: white;
+        }
+
+        .btn-warning:hover { background: #d97706; }
+
+        .btn-info {
+            background: var(--accent-blue);
+            color: white;
+        }
+
+        .btn-info:hover { background: #2563eb; }
+
+        .btn-success {
+            background: var(--accent-green);
+            color: white;
+        }
+
+        .btn-success:hover { background: #22c55e; }
+
+        .btn-purple {
+            background: var(--accent-purple);
+            color: white;
+        }
+
+        .btn-purple:hover { background: #8b5cf6; }
+
+        .btn-pink {
+            background: var(--accent-pink);
+            color: white;
+        }
+
+        .btn-pink:hover { background: #ec4899; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--text-secondary);
+        }
+
+        /* Console Output */
+        .console {
+            background: #000;
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .console-line {
+            padding: 0.25rem 0;
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .console-time {
+            color: var(--text-secondary);
+        }
+
+        .console-type {
+            min-width: 60px;
+        }
+
+        .console-type.error { color: var(--accent-red); }
+        .console-type.warning { color: var(--accent-orange); }
+        .console-type.info { color: var(--accent-blue); }
+        .console-type.success { color: var(--accent-green); }
+
+        .console-message {
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            animation: slideIn 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .toast.error { background: var(--accent-red); color: white; }
+        .toast.success { background: var(--accent-green); color: white; }
+        .toast.info { background: var(--accent-blue); color: white; }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-value {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            border-color: var(--text-secondary);
+            color: var(--text-primary);
+        }
+
+        .tab.active {
+            background: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        /* Code blocks */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg-tertiary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+        }
+
+        /* DSN Input */
+        .dsn-input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .dsn-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+        }
+
+        .dsn-input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container { padding: 1rem; }
+            h1 { font-size: 1.75rem; }
+            .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container" id="container">
-        <h1 data-i18n="welcome"></h1> <!- Welcome ->
-        <div id="nameInput" class="input-group-lg center-block helloInput">
-            <p class="lead" data-i18n="what_is_your_name"></p>
-            <input id="user_name" type="text" class="form-control" aria-describedby="sizing-addon1" value="" />
-        </div>
-        <p id="response" class="lead text-center"></p>
+    <div class="toast-container" id="toastContainer"></div>
 
-        <p id="databaseNames" class="lead text-center"></p>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo">🔥</div>
+            <h1>Sentry Test Console</h1>
+            <p class="subtitle">Comprehensive error tracking & performance monitoring test suite</p>
+            
+            <div class="status-bar">
+                <div class="status-badge">
+                    <span class="status-dot" id="sentryStatusDot"></span>
+                    <span id="sentryStatus">Checking Sentry...</span>
+                </div>
+                <div class="status-badge">
+                    <span>📦</span>
+                    <span id="releaseInfo">Release: loading...</span>
+                </div>
+                <div class="status-badge">
+                    <span>🌍</span>
+                    <span id="envInfo">Env: loading...</span>
+                </div>
+            </div>
+
+            <div class="dsn-input-group">
+                <input type="text" class="dsn-input" id="dsnInput" placeholder="Paste your Sentry DSN here (https://xxx@xxx.ingest.sentry.io/xxx)">
+                <button class="btn btn-info" onclick="initSentryWithDsn()" style="width: auto;">Initialize Sentry</button>
+            </div>
+        </header>
+
+        <!-- JavaScript Error Tests -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">💥</span>
+                <h2 class="section-title">JavaScript Errors</h2>
+                <span class="section-description">Frontend error types</span>
+            </div>
+            <div class="grid grid-4">
+                <button class="btn btn-error" onclick="triggerUnhandledError()">
+                    <span>⚠️</span> Unhandled Error
+                </button>
+                <button class="btn btn-error" onclick="triggerTypeError()">
+                    <span>🔤</span> TypeError
+                </button>
+                <button class="btn btn-error" onclick="triggerReferenceError()">
+                    <span>📍</span> ReferenceError
+                </button>
+                <button class="btn btn-error" onclick="triggerSyntaxLikeError()">
+                    <span>📝</span> Syntax-like Error
+                </button>
+                <button class="btn btn-error" onclick="triggerRangeError()">
+                    <span>📏</span> RangeError
+                </button>
+                <button class="btn btn-error" onclick="triggerURIError()">
+                    <span>🔗</span> URIError
+                </button>
+                <button class="btn btn-error" onclick="triggerPromiseRejection()">
+                    <span>🔄</span> Unhandled Promise
+                </button>
+                <button class="btn btn-error" onclick="triggerAsyncError()">
+                    <span>⏳</span> Async Error
+                </button>
+            </div>
+        </section>
+
+        <!-- Backend Error Tests -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">🐍</span>
+                <h2 class="section-title">Backend Errors (Python/Flask)</h2>
+                <span class="section-description">Server-side error triggers</span>
+            </div>
+            <div class="grid grid-4">
+                <button class="btn btn-warning" onclick="callBackendError('unhandled')">
+                    <span>💣</span> Unhandled Exception
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('division')">
+                    <span>➗</span> Division by Zero
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('key')">
+                    <span>🔑</span> KeyError
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('type')">
+                    <span>🏷️</span> TypeError
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('attribute')">
+                    <span>📎</span> AttributeError
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('index')">
+                    <span>📊</span> IndexError
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('value')">
+                    <span>💎</span> ValueError
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('custom')">
+                    <span>🎨</span> Custom Exception
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('chained')">
+                    <span>🔗</span> Chained Exceptions
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('logged')">
+                    <span>📝</span> Logged Error
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('http/500')">
+                    <span>🚨</span> HTTP 500
+                </button>
+                <button class="btn btn-warning" onclick="callBackendError('http/404')">
+                    <span>🔍</span> HTTP 404
+                </button>
+            </div>
+        </section>
+
+        <!-- Message Capture -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">📨</span>
+                <h2 class="section-title">Message Capture</h2>
+                <span class="section-description">Manual event reporting</span>
+            </div>
+            <div class="grid grid-3">
+                <button class="btn btn-info" onclick="captureMessage('info')">
+                    <span>ℹ️</span> Info Message
+                </button>
+                <button class="btn btn-warning" onclick="captureMessage('warning')">
+                    <span>⚠️</span> Warning Message
+                </button>
+                <button class="btn btn-error" onclick="captureMessage('error')">
+                    <span>❌</span> Error Message
+                </button>
+                <button class="btn btn-purple" onclick="captureCustomEvent()">
+                    <span>🎯</span> Custom Event
+                </button>
+                <button class="btn btn-purple" onclick="callBackendMessage()">
+                    <span>🐍</span> Backend Message
+                </button>
+                <button class="btn btn-purple" onclick="callBackendEvent()">
+                    <span>📤</span> Backend Event
+                </button>
+            </div>
+        </section>
+
+        <!-- Performance Monitoring -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">⚡</span>
+                <h2 class="section-title">Performance Monitoring</h2>
+                <span class="section-description">Transactions & spans</span>
+            </div>
+            <div class="grid grid-3">
+                <button class="btn btn-success" onclick="createTransaction()">
+                    <span>📊</span> Create Transaction
+                </button>
+                <button class="btn btn-success" onclick="createNestedSpans()">
+                    <span>🪆</span> Nested Spans
+                </button>
+                <button class="btn btn-success" onclick="simulateSlowOperation()">
+                    <span>🐌</span> Slow Operation
+                </button>
+                <button class="btn btn-success" onclick="callBackendPerformance('slow')">
+                    <span>🐍</span> Backend Slow
+                </button>
+                <button class="btn btn-success" onclick="callBackendPerformance('nested')">
+                    <span>🐍</span> Backend Nested
+                </button>
+                <button class="btn btn-success" onclick="callBackendPerformance('database')">
+                    <span>🗄️</span> DB Operations
+                </button>
+            </div>
+        </section>
+
+        <!-- Context & Breadcrumbs -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">🧭</span>
+                <h2 class="section-title">Context & Breadcrumbs</h2>
+                <span class="section-description">Rich error context</span>
+            </div>
+            <div class="grid grid-3">
+                <button class="btn btn-pink" onclick="setUserContext()">
+                    <span>👤</span> Set User Context
+                </button>
+                <button class="btn btn-pink" onclick="addBreadcrumbs()">
+                    <span>🍞</span> Add Breadcrumbs
+                </button>
+                <button class="btn btn-pink" onclick="errorWithBreadcrumbs()">
+                    <span>🔥</span> Error + Breadcrumbs
+                </button>
+                <button class="btn btn-pink" onclick="setTags()">
+                    <span>🏷️</span> Set Tags
+                </button>
+                <button class="btn btn-pink" onclick="setContext()">
+                    <span>📋</span> Set Context
+                </button>
+                <button class="btn btn-pink" onclick="callBackendContext()">
+                    <span>🐍</span> Backend Context
+                </button>
+            </div>
+        </section>
+
+        <!-- Issue Grouping -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">📁</span>
+                <h2 class="section-title">Issue Grouping (Fingerprinting)</h2>
+                <span class="section-description">Control how errors are grouped</span>
+            </div>
+            <div class="grid grid-4">
+                <button class="btn btn-outline" onclick="fingerprintedError('group-a')">
+                    <span>📂</span> Group A
+                </button>
+                <button class="btn btn-outline" onclick="fingerprintedError('group-b')">
+                    <span>📂</span> Group B
+                </button>
+                <button class="btn btn-outline" onclick="fingerprintedError('group-c')">
+                    <span>📂</span> Group C
+                </button>
+                <button class="btn btn-outline" onclick="callBackendFingerprint()">
+                    <span>🐍</span> Backend Fingerprint
+                </button>
+            </div>
+        </section>
+
+        <!-- Advanced Features -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">🔬</span>
+                <h2 class="section-title">Advanced Features</h2>
+                <span class="section-description">Session replay, scopes & more</span>
+            </div>
+            <div class="grid grid-3">
+                <button class="btn btn-purple" onclick="testScope()">
+                    <span>🎯</span> Test Scope Isolation
+                </button>
+                <button class="btn btn-purple" onclick="captureWithAttachments()">
+                    <span>📎</span> With Attachments
+                </button>
+                <button class="btn btn-purple" onclick="triggerReplayEvent()">
+                    <span>🎬</span> Trigger Replay Event
+                </button>
+                <button class="btn btn-purple" onclick="callBackendAsync()">
+                    <span>🐍</span> Backend Thread Error
+                </button>
+                <button class="btn btn-purple" onclick="callBackendSensitive()">
+                    <span>🔒</span> Sensitive Data Test
+                </button>
+                <button class="btn btn-purple" onclick="testSentryConnection()">
+                    <span>🔌</span> Test Connection
+                </button>
+            </div>
+        </section>
+
+        <!-- Console Output -->
+        <section class="section">
+            <div class="section-header">
+                <span class="section-icon">🖥️</span>
+                <h2 class="section-title">Console Output</h2>
+                <button class="btn btn-outline" onclick="clearConsole()" style="width: auto; margin-left: auto;">Clear</button>
+            </div>
+            <div class="console" id="console">
+                <div class="console-line">
+                    <span class="console-time">[--:--:--]</span>
+                    <span class="console-type info">INFO</span>
+                    <span class="console-message">Sentry Test Console initialized. Click buttons above to trigger events.</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats -->
+        <section class="section">
+            <div class="grid grid-4">
+                <div class="card">
+                    <div class="card-title">Errors Triggered</div>
+                    <div class="card-value" id="errorCount">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Messages Sent</div>
+                    <div class="card-value" id="messageCount">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Transactions</div>
+                    <div class="card-value" id="transactionCount">0</div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Backend Calls</div>
+                    <div class="card-value" id="backendCount">0</div>
+                </div>
+            </div>
+        </section>
     </div>
-    <footer class="footer">
-        <div class="container">
-            <span><a href="https://console.bluemix.net/docs/tutorials/index.html" target="_blank">Looking for more tutorials?</a></span>
-        </div>
-    </footer>
 
-</body>
+    <script>
+        // =============================================================================
+        // SENTRY INITIALIZATION
+        // =============================================================================
+        
+        let sentryInitialized = false;
+        let stats = { errors: 0, messages: 0, transactions: 0, backend: 0 };
 
-
-</html>
-
-
-<script>
-    	//Submit data when enter key is pressed
-        $('#user_name').keydown(function(e) {
-        	var name = $('#user_name').val();
-            if (e.which == 13 && name.length > 0) { //catch Enter key
-            	//POST request to API to create a new visitor entry in the database
-                $.ajax({
-				  method: "POST",
-				  url: "./api/visitors",
-				  contentType: "application/json",
-				  data: JSON.stringify({name: name })
-				})
-                .done(function(data) {
-                    if(data && data.name){
-                        if(data._id)
-                            $('#response').html($.i18n('added_to_database', AntiXSS.sanitizeInput(data.name)));
-                        else
-                            $('#response').html($.i18n('hello', AntiXSS.sanitizeInput(data.name))); 
-                    }
-                    else {
-                        $('#response').html(AntiXSS.sanitizeInput(data));
-                    }
-                    $('#nameInput').hide();
-                    getNames();
-                });
+        function initSentryWithDsn() {
+            const dsn = document.getElementById('dsnInput').value.trim();
+            if (!dsn) {
+                showToast('Please enter a valid Sentry DSN', 'error');
+                return;
             }
+            
+            try {
+                Sentry.init({
+                    dsn: dsn,
+                    
+                    // Performance Monitoring
+                    tracesSampleRate: 1.0,
+                    
+                    // Session Replay
+                    replaysSessionSampleRate: 1.0,
+                    replaysOnErrorSampleRate: 1.0,
+                    
+                    integrations: [
+                        Sentry.browserTracingIntegration(),
+                        Sentry.replayIntegration({
+                            maskAllText: false,
+                            blockAllMedia: false,
+                        }),
+                    ],
+                    
+                    // Release tracking
+                    release: "sentry-test-frontend@1.0.0",
+                    environment: "development",
+                    
+                    // Debug mode for testing
+                    debug: true,
+                    
+                    // Before send hook
+                    beforeSend(event, hint) {
+                        logToConsole('Sending event to Sentry: ' + (event.message || event.exception?.values?.[0]?.value || 'Unknown'), 'info');
+                        return event;
+                    },
+                });
+                
+                sentryInitialized = true;
+                updateSentryStatus(true);
+                showToast('Sentry initialized successfully!', 'success');
+                logToConsole('Sentry initialized with DSN: ' + dsn.substring(0, 30) + '...', 'success');
+            } catch (e) {
+                showToast('Failed to initialize Sentry: ' + e.message, 'error');
+                logToConsole('Sentry init failed: ' + e.message, 'error');
+            }
+        }
+
+        function updateSentryStatus(connected) {
+            const dot = document.getElementById('sentryStatusDot');
+            const status = document.getElementById('sentryStatus');
+            
+            if (connected) {
+                dot.className = 'status-dot connected';
+                status.textContent = 'Sentry Connected';
+            } else {
+                dot.className = 'status-dot disconnected';
+                status.textContent = 'Sentry Not Connected';
+            }
+        }
+
+        function checkSentryStatus() {
+            updateSentryStatus(sentryInitialized);
+            
+            // Fetch release info from backend
+            fetch('/api/release/info')
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('releaseInfo').textContent = 'Release: ' + data.release;
+                    document.getElementById('envInfo').textContent = 'Env: ' + data.environment;
+                })
+                .catch(() => {
+                    document.getElementById('releaseInfo').textContent = 'Release: unknown';
+                    document.getElementById('envInfo').textContent = 'Env: unknown';
+                });
+        }
+
+        // =============================================================================
+        // JAVASCRIPT ERROR TRIGGERS
+        // =============================================================================
+
+        function triggerUnhandledError() {
+            checkSentry();
+            logToConsole('Triggering unhandled error...', 'warning');
+            stats.errors++;
+            updateStats();
+            throw new Error('This is an unhandled JavaScript error!');
+        }
+
+        function triggerTypeError() {
+            checkSentry();
+            logToConsole('Triggering TypeError...', 'warning');
+            stats.errors++;
+            updateStats();
+            const obj = null;
+            obj.someMethod(); // TypeError: Cannot read property 'someMethod' of null
+        }
+
+        function triggerReferenceError() {
+            checkSentry();
+            logToConsole('Triggering ReferenceError...', 'warning');
+            stats.errors++;
+            updateStats();
+            console.log(undefinedVariable); // ReferenceError
+        }
+
+        function triggerSyntaxLikeError() {
+            checkSentry();
+            logToConsole('Triggering syntax-like error...', 'warning');
+            stats.errors++;
+            updateStats();
+            eval('this is not valid javascript {{{');
+        }
+
+        function triggerRangeError() {
+            checkSentry();
+            logToConsole('Triggering RangeError...', 'warning');
+            stats.errors++;
+            updateStats();
+            const arr = new Array(-1); // RangeError: Invalid array length
+        }
+
+        function triggerURIError() {
+            checkSentry();
+            logToConsole('Triggering URIError...', 'warning');
+            stats.errors++;
+            updateStats();
+            decodeURIComponent('%'); // URIError
+        }
+
+        function triggerPromiseRejection() {
+            checkSentry();
+            logToConsole('Triggering unhandled promise rejection...', 'warning');
+            stats.errors++;
+            updateStats();
+            new Promise((resolve, reject) => {
+                reject(new Error('Unhandled promise rejection!'));
+            });
+        }
+
+        async function triggerAsyncError() {
+            checkSentry();
+            logToConsole('Triggering async error...', 'warning');
+            stats.errors++;
+            updateStats();
+            await new Promise((resolve, reject) => {
+                setTimeout(() => reject(new Error('Async operation failed!')), 100);
+            });
+        }
+
+        // =============================================================================
+        // BACKEND ERROR TRIGGERS
+        // =============================================================================
+
+        function callBackendError(type) {
+            checkSentry();
+            logToConsole(`Calling backend error: ${type}...`, 'warning');
+            stats.backend++;
+            updateStats();
+            
+            fetch(`/api/errors/${type}`)
+                .then(r => {
+                    if (!r.ok) {
+                        logToConsole(`Backend returned ${r.status} - Error captured!`, 'error');
+                    }
+                    return r.text();
+                })
+                .then(data => {
+                    logToConsole(`Backend response: ${data.substring(0, 100)}...`, 'info');
+                })
+                .catch(e => {
+                    logToConsole(`Backend error: ${e.message}`, 'error');
+                });
+        }
+
+        // =============================================================================
+        // MESSAGE CAPTURE
+        // =============================================================================
+
+        function captureMessage(level) {
+            checkSentry();
+            const message = `Test ${level} message from Sentry Test Console`;
+            Sentry.captureMessage(message, level);
+            logToConsole(`Captured ${level} message`, 'success');
+            stats.messages++;
+            updateStats();
+            showToast(`${level.toUpperCase()} message sent to Sentry`, 'info');
+        }
+
+        function captureCustomEvent() {
+            checkSentry();
+            const eventId = Sentry.captureEvent({
+                message: 'Custom event with extra data',
+                level: 'info',
+                tags: {
+                    feature: 'custom_events',
+                    source: 'frontend'
+                },
+                extra: {
+                    customData: {
+                        timestamp: new Date().toISOString(),
+                        userAction: 'clicked custom event button',
+                        sessionInfo: { pageViews: 5, duration: '2m 30s' }
+                    }
+                }
+            });
+            logToConsole(`Custom event captured: ${eventId}`, 'success');
+            stats.messages++;
+            updateStats();
+        }
+
+        function callBackendMessage() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            fetch('/api/messages/capture?level=info&message=Test%20message%20from%20frontend')
+                .then(r => r.json())
+                .then(data => {
+                    logToConsole(`Backend message captured: ${JSON.stringify(data)}`, 'success');
+                });
+        }
+
+        function callBackendEvent() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            fetch('/api/messages/event')
+                .then(r => r.json())
+                .then(data => {
+                    logToConsole(`Backend event captured: ${data.event_id}`, 'success');
+                });
+        }
+
+        // =============================================================================
+        // PERFORMANCE MONITORING
+        // =============================================================================
+
+        function createTransaction() {
+            checkSentry();
+            const transaction = Sentry.startInactiveSpan({
+                name: 'test-transaction',
+                op: 'test',
+            });
+            
+            setTimeout(() => {
+                transaction.end();
+                logToConsole('Transaction completed', 'success');
+            }, 1000);
+            
+            logToConsole('Transaction started...', 'info');
+            stats.transactions++;
+            updateStats();
+        }
+
+        function createNestedSpans() {
+            checkSentry();
+            
+            Sentry.startSpan({ name: 'parent-operation', op: 'test' }, () => {
+                // Simulate some work
+                const start = Date.now();
+                while (Date.now() - start < 100) {}
+                
+                Sentry.startSpan({ name: 'child-operation-1', op: 'test.child' }, () => {
+                    const start = Date.now();
+                    while (Date.now() - start < 50) {}
+                });
+                
+                Sentry.startSpan({ name: 'child-operation-2', op: 'test.child' }, () => {
+                    const start = Date.now();
+                    while (Date.now() - start < 75) {}
+                    
+                    Sentry.startSpan({ name: 'grandchild-operation', op: 'test.grandchild' }, () => {
+                        const start = Date.now();
+                        while (Date.now() - start < 25) {}
+                    });
+                });
+            });
+            
+            logToConsole('Nested spans created', 'success');
+            stats.transactions++;
+            updateStats();
+        }
+
+        function simulateSlowOperation() {
+            checkSentry();
+            logToConsole('Starting slow operation...', 'info');
+            
+            Sentry.startSpan({ name: 'slow-operation', op: 'test.slow' }, async () => {
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                logToConsole('Slow operation completed', 'success');
+            });
+            
+            stats.transactions++;
+            updateStats();
+        }
+
+        function callBackendPerformance(type) {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            logToConsole(`Calling backend performance: ${type}...`, 'info');
+            
+            fetch(`/api/performance/${type}`)
+                .then(r => r.json())
+                .then(data => {
+                    logToConsole(`Backend performance response: ${JSON.stringify(data)}`, 'success');
+                });
+        }
+
+        // =============================================================================
+        // CONTEXT & BREADCRUMBS
+        // =============================================================================
+
+        function setUserContext() {
+            checkSentry();
+            Sentry.setUser({
+                id: 'test-user-123',
+                email: 'test@example.com',
+                username: 'testuser',
+                ip_address: '{{auto}}'
+            });
+            logToConsole('User context set', 'success');
+            showToast('User context configured', 'success');
+        }
+
+        function addBreadcrumbs() {
+            checkSentry();
+            Sentry.addBreadcrumb({
+                category: 'ui.click',
+                message: 'User clicked Add Breadcrumbs button',
+                level: 'info'
+            });
+            
+            Sentry.addBreadcrumb({
+                category: 'navigation',
+                message: 'User navigated to test section',
+                level: 'info',
+                data: { from: 'home', to: 'test' }
+            });
+            
+            Sentry.addBreadcrumb({
+                category: 'xhr',
+                message: 'API call initiated',
+                level: 'info',
+                data: { url: '/api/test', method: 'GET' }
+            });
+            
+            logToConsole('Added 3 breadcrumbs', 'success');
+            showToast('Breadcrumbs added - trigger an error to see them', 'info');
+        }
+
+        function errorWithBreadcrumbs() {
+            checkSentry();
+            
+            Sentry.addBreadcrumb({ category: 'test', message: 'Step 1: Initialization', level: 'info' });
+            Sentry.addBreadcrumb({ category: 'test', message: 'Step 2: Processing', level: 'info' });
+            Sentry.addBreadcrumb({ category: 'test', message: 'Step 3: About to fail', level: 'warning' });
+            
+            stats.errors++;
+            updateStats();
+            throw new Error('Error with breadcrumb trail!');
+        }
+
+        function setTags() {
+            checkSentry();
+            Sentry.setTag('component', 'test-console');
+            Sentry.setTag('version', '1.0.0');
+            Sentry.setTag('feature', 'error-testing');
+            Sentry.setTag('region', 'us-west-2');
+            logToConsole('Tags set: component, version, feature, region', 'success');
+        }
+
+        function setContext() {
+            checkSentry();
+            Sentry.setContext('test_context', {
+                testId: 'abc123',
+                testType: 'manual',
+                timestamp: new Date().toISOString(),
+                metadata: { key: 'value', nested: { data: true } }
+            });
+            
+            Sentry.setContext('browser_info', {
+                userAgent: navigator.userAgent,
+                language: navigator.language,
+                platform: navigator.platform
+            });
+            
+            logToConsole('Custom contexts set', 'success');
+        }
+
+        function callBackendContext() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            fetch('/api/context/rich')
+                .catch(e => logToConsole(`Backend context error captured: ${e.message}`, 'success'));
+        }
+
+        // =============================================================================
+        // FINGERPRINTING
+        // =============================================================================
+
+        function fingerprintedError(group) {
+            checkSentry();
+            
+            Sentry.withScope(scope => {
+                scope.setFingerprint(['custom-fingerprint', group]);
+                scope.setTag('error_group', group);
+                Sentry.captureException(new Error(`Error in ${group} - should be grouped together`));
+            });
+            
+            logToConsole(`Fingerprinted error sent to group: ${group}`, 'success');
+            stats.errors++;
+            updateStats();
+        }
+
+        function callBackendFingerprint() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            const group = ['group-x', 'group-y', 'group-z'][Math.floor(Math.random() * 3)];
+            fetch(`/api/fingerprint/custom?group=${group}`)
+                .catch(e => logToConsole(`Backend fingerprint error (${group}): ${e.message}`, 'success'));
+        }
+
+        // =============================================================================
+        // ADVANCED FEATURES
+        // =============================================================================
+
+        function testScope() {
+            checkSentry();
+            
+            // Isolated scope test
+            Sentry.withScope(scope => {
+                scope.setTag('isolated', 'true');
+                scope.setExtra('scope_data', 'only in this scope');
+                scope.setLevel('warning');
+                Sentry.captureMessage('Message with isolated scope');
+            });
+            
+            // This message won't have the isolated scope data
+            Sentry.captureMessage('Message without isolated scope');
+            
+            logToConsole('Scope isolation test completed - check both messages in Sentry', 'success');
+            stats.messages += 2;
+            updateStats();
+        }
+
+        function captureWithAttachments() {
+            checkSentry();
+            
+            Sentry.withScope(scope => {
+                scope.addAttachment({
+                    filename: 'test-data.json',
+                    data: JSON.stringify({ test: 'data', timestamp: Date.now() }),
+                    contentType: 'application/json'
+                });
+                Sentry.captureMessage('Message with attachment');
+            });
+            
+            logToConsole('Message with attachment sent', 'success');
+            stats.messages++;
+            updateStats();
+        }
+
+        function triggerReplayEvent() {
+            checkSentry();
+            
+            // Create some user interactions for replay
+            const btn = document.createElement('button');
+            btn.textContent = 'Temporary Button';
+            btn.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;padding:20px;font-size:18px;';
+            document.body.appendChild(btn);
+            
+            setTimeout(() => {
+                btn.click();
+                setTimeout(() => {
+                    btn.remove();
+                    stats.errors++;
+                    updateStats();
+                    throw new Error('Error after user interaction - check Session Replay!');
+                }, 500);
+            }, 500);
+            
+            logToConsole('Replay event triggered - error will occur in 1 second', 'info');
+        }
+
+        function callBackendAsync() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            fetch('/api/async/thread')
+                .then(r => r.json())
+                .then(data => logToConsole(`Backend async response: ${JSON.stringify(data)}`, 'info'));
+        }
+
+        function callBackendSensitive() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            fetch('/api/sensitive/scrubbed', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password: 'secret123', data: 'test' })
+            }).catch(e => logToConsole(`Sensitive data test error: ${e.message}`, 'success'));
+        }
+
+        function testSentryConnection() {
+            checkSentry();
+            stats.backend++;
+            updateStats();
+            
+            fetch('/api/sentry/test')
+                .then(r => r.json())
+                .then(data => {
+                    logToConsole(`Connection test: ${data.message}`, 'success');
+                    showToast(data.message, 'success');
+                })
+                .catch(e => {
+                    logToConsole(`Connection test failed: ${e.message}`, 'error');
+                    showToast('Connection test failed', 'error');
+                });
+        }
+
+        // =============================================================================
+        // UTILITIES
+        // =============================================================================
+
+        function checkSentry() {
+            if (!sentryInitialized) {
+                logToConsole('Warning: Sentry not initialized. Events may not be captured.', 'warning');
+            }
+        }
+
+        function logToConsole(message, type = 'info') {
+            const console = document.getElementById('console');
+            const time = new Date().toLocaleTimeString();
+            const line = document.createElement('div');
+            line.className = 'console-line';
+            line.innerHTML = `
+                <span class="console-time">[${time}]</span>
+                <span class="console-type ${type}">${type.toUpperCase()}</span>
+                <span class="console-message">${message}</span>
+            `;
+            console.appendChild(line);
+            console.scrollTop = console.scrollHeight;
+        }
+
+        function clearConsole() {
+            const console = document.getElementById('console');
+            console.innerHTML = `
+                <div class="console-line">
+                    <span class="console-time">[${new Date().toLocaleTimeString()}]</span>
+                    <span class="console-type info">INFO</span>
+                    <span class="console-message">Console cleared.</span>
+                </div>
+            `;
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `<span>${type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️'}</span> ${message}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideIn 0.3s ease reverse';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function updateStats() {
+            document.getElementById('errorCount').textContent = stats.errors;
+            document.getElementById('messageCount').textContent = stats.messages;
+            document.getElementById('transactionCount').textContent = stats.transactions;
+            document.getElementById('backendCount').textContent = stats.backend;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkSentryStatus();
+            logToConsole('Page loaded. Enter your Sentry DSN above to start testing.', 'info');
         });
 
-        //Retrieve all the visitors from the database
-        function getNames(){
-          $.get("./api/visitors")
-              .done(function(data) {
-                  if(data.length > 0) {
-                    data.forEach(function(element, index) {
-                      data[index] = AntiXSS.sanitizeInput(element)
-                    });
-                    $('#databaseNames').html($.i18n('database_contents') + JSON.stringify(data));
-                  }
-              });
-          }
+        // Global error handler
+        window.onerror = function(msg, url, line, col, error) {
+            logToConsole(`Global error: ${msg} at ${url}:${line}:${col}`, 'error');
+        };
 
-          //Call getNames on page load.
-          getNames();
-
-
+        window.onunhandledrejection = function(event) {
+            logToConsole(`Unhandled rejection: ${event.reason}`, 'error');
+        };
     </script>
+</body>
+</html>

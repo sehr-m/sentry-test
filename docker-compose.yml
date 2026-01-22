@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SENTRY_DSN=${SENTRY_DSN:-}
+      - SENTRY_ENVIRONMENT=${SENTRY_ENVIRONMENT:-docker}
+      - SENTRY_RELEASE=${SENTRY_RELEASE:-sentry-test@1.0.0}
+      - PORT=8000
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+      - COUCHDB_HOST=couchdb
+      - COUCHDB_URL=http://couchdb:5984
+    depends_on:
+      couchdb:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  couchdb:
+    image: couchdb:3
+    ports:
+      - "5984:5984"
+    environment:
+      - COUCHDB_USER=admin
+      - COUCHDB_PASSWORD=password
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5984/_up"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  couchdb_data:
