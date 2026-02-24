@@ -199,7 +199,7 @@ def error_attribute():
 def error_index():
     """Trigger an IndexError."""
     my_list = [1, 2, 3]
-    return jsonify({"value": my_list[100]})
+    return jsonify({"value": my_list[0]})
 
 
 @app.route("/api/errors/value")
