@@ -191,8 +191,11 @@ def error_type():
 @app.route("/api/errors/attribute")
 def error_attribute():
     """Trigger an AttributeError."""
-    obj = None
-    return jsonify({"value": obj.nonexistent_method()})
+    class TestObject:
+        pass
+
+    obj = TestObject()
+    return jsonify({"value": obj.nonexistent_attribute})
 
 
 @app.route("/api/errors/index")
