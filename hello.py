@@ -205,6 +205,12 @@ def error_index():
 @app.route("/api/errors/value")
 def error_value():
     """Trigger a ValueError."""
+    sentry_sdk.set_tag("error_type", "value")
+    sentry_sdk.add_breadcrumb(
+        category="test",
+        message="About to trigger ValueError",
+        level="warning"
+    )
     return jsonify({"value": int("not_a_number")})
 
 
