@@ -260,7 +260,11 @@ def error_chained():
         except ValueError as e:
             raise RuntimeError("Second level error") from e
     except RuntimeError as e:
-        raise Exception("Third level error - the final exception") from e
+        try:
+            raise Exception("Third level error - the final exception") from e
+        except Exception:
+            sentry_sdk.capture_exception()
+            return jsonify({"status": "chained exception captured"}), 500
 
 
 @app.route("/api/errors/logged")
