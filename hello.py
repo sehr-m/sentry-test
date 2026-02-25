@@ -267,8 +267,8 @@ def error_chained():
 def error_logged():
     """Trigger an error through logging (captured by LoggingIntegration)."""
     logger.info("This is an info message (breadcrumb)")
-    logger.warning("This is a warning message (breadcrumb)")
-    logger.error("This is an error message - should create a Sentry event!")
+    logger.warning("This is a warning message")
+    logger.warning("This is a warning message - prevents unwanted Sentry event!")
     return jsonify({"status": "logged"})
 
 
