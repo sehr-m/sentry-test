@@ -278,11 +278,10 @@ def error_logged():
 
 @app.route("/api/messages/capture")
 def message_capture():
-    """Capture a message manually (not an error)."""
+    """Return message details without sending to Sentry."""
     level = request.args.get("level", "info")
     message = request.args.get("message", "Test message from Sentry test app")
-    
-    sentry_sdk.capture_message(message, level=level)
+
     return jsonify({"status": "captured", "level": level, "message": message})
 
 
