@@ -36,17 +36,17 @@ sentry_sdk.init(
         logging_integration,
     ],
     # Performance Monitoring
-    traces_sample_rate=1.0,  # Capture 100% of transactions for testing
-    profiles_sample_rate=1.0,  # Profile 100% of sampled transactions
-    
+    traces_sample_rate=float(os.getenv("SENTRY_TRACES_SAMPLE_RATE", "0.2")),  # Sample 20% of transactions
+    profiles_sample_rate=float(os.getenv("SENTRY_PROFILES_SAMPLE_RATE", "0.1")),  # Profile 10% of sampled transactions
+
     # Release tracking
     release=os.getenv("SENTRY_RELEASE", "sentry-test@1.0.0"),
     environment=os.getenv("SENTRY_ENVIRONMENT", "development"),
-    
+
     # Additional options
     send_default_pii=True,  # Send user data (be careful in production)
     attach_stacktrace=True,  # Attach stack traces to messages
-    
+
     # Before send hook for filtering/enriching events
     before_send=lambda event, hint: enrich_event(event, hint),
 )
@@ -281,8 +281,9 @@ def message_capture():
     """Capture a message manually (not an error)."""
     level = request.args.get("level", "info")
     message = request.args.get("message", "Test message from Sentry test app")
-    
+
     sentry_sdk.capture_message(message, level=level)
+    sentry_sdk.flush(timeout=2)
     return jsonify({"status": "captured", "level": level, "message": message})
 
 
