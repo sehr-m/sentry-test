@@ -123,11 +123,6 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
 
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
@@ -168,10 +163,13 @@ def error_unhandled():
 
 @app.route("/api/errors/division")
 def error_division():
-    """Trigger a ZeroDivisionError."""
+    """Trigger a ZeroDivisionError safely and report to Sentry."""
     sentry_sdk.set_tag("error_type", "division_by_zero")
-    result = 1 / 0
-    return jsonify({"result": result})
+    try:
+        result = 1 / 0
+    except ZeroDivisionError as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"error": "ZeroDivisionError", "message": str(e)}), 500
 
 
 @app.route("/api/errors/key")
