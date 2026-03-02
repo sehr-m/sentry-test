@@ -53,6 +53,14 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
+    # Filter out Sentry internal infrastructure errors (e.g. snuba trace tests)
+    if "exception" in event:
+        for exc_info in event["exception"].get("values", []):
+            exc_type = exc_info.get("type", "")
+            exc_value = exc_info.get("value", "")
+            if exc_type == "TestError" and "snuba" in exc_value.lower():
+                return None
+
     # Add custom context
     if "extra" not in event:
         event["extra"] = {}
