@@ -45,8 +45,7 @@ sentry_sdk.init(
     
     # Additional options
     send_default_pii=True,  # Send user data (be careful in production)
-    attach_stacktrace=True,  # Attach stack traces to messages
-    
+
     # Before send hook for filtering/enriching events
     before_send=lambda event, hint: enrich_event(event, hint),
 )
@@ -57,6 +56,13 @@ def enrich_event(event, hint):
     if "extra" not in event:
         event["extra"] = {}
     event["extra"]["custom_enrichment"] = "Added by before_send hook"
+
+    # Ensure message events are not misinterpreted as exceptions.
+    # When there is no real exception in the hint, strip any synthetic
+    # exception data so Sentry treats the event as a plain message.
+    if "exc_info" not in hint and "exception" in event:
+        del event["exception"]
+
     return event
 
 # =============================================================================
