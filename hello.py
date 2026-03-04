@@ -53,6 +53,12 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
+    # Filter out DebugError events not originating from this application
+    if "exc_info" in hint:
+        exc_type, exc_value, _ = hint["exc_info"]
+        if exc_type.__name__ == "DebugError":
+            return None
+
     # Add custom context
     if "extra" not in event:
         event["extra"] = {}
@@ -122,12 +128,6 @@ def set_sentry_user():
 def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
-
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
 
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
