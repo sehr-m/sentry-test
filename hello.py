@@ -123,11 +123,6 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
 
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
@@ -281,30 +276,38 @@ def message_capture():
     """Capture a message manually (not an error)."""
     level = request.args.get("level", "info")
     message = request.args.get("message", "Test message from Sentry test app")
-    
-    sentry_sdk.capture_message(message, level=level)
-    return jsonify({"status": "captured", "level": level, "message": message})
+
+    try:
+        event_id = sentry_sdk.capture_message(message, level=level)
+        return jsonify({"status": "captured", "level": level, "message": message, "event_id": str(event_id)})
+    except Exception as e:
+        logger.warning(f"Sentry capture_message failed: {e}")
+        return jsonify({"status": "error", "error": str(e), "level": level, "message": message}), 500
 
 
 @app.route("/api/messages/event")
 def message_event():
     """Capture a fully customized event."""
-    event_id = sentry_sdk.capture_event({
-        "message": "Custom event with all the bells and whistles",
-        "level": "warning",
-        "tags": {
-            "feature": "custom_events",
-            "test_type": "manual"
-        },
-        "extra": {
-            "custom_data": {
-                "items": [1, 2, 3],
-                "metadata": {"source": "test_endpoint"}
-            }
-        },
-        "fingerprint": ["custom-event-fingerprint"]
-    })
-    return jsonify({"status": "captured", "event_id": str(event_id)})
+    try:
+        event_id = sentry_sdk.capture_event({
+            "message": "Custom event with all the bells and whistles",
+            "level": "warning",
+            "tags": {
+                "feature": "custom_events",
+                "test_type": "manual"
+            },
+            "extra": {
+                "custom_data": {
+                    "items": [1, 2, 3],
+                    "metadata": {"source": "test_endpoint"}
+                }
+            },
+            "fingerprint": ["custom-event-fingerprint"]
+        })
+        return jsonify({"status": "captured", "event_id": str(event_id)})
+    except Exception as e:
+        logger.warning(f"Sentry capture_event failed: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
 
 
 # =============================================================================
