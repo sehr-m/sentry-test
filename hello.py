@@ -123,11 +123,6 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
 
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
@@ -281,8 +276,16 @@ def message_capture():
     """Capture a message manually (not an error)."""
     level = request.args.get("level", "info")
     message = request.args.get("message", "Test message from Sentry test app")
-    
-    sentry_sdk.capture_message(message, level=level)
+
+    valid_levels = ("fatal", "critical", "error", "warning", "info", "debug")
+    if level not in valid_levels:
+        return jsonify({"status": "error", "error": f"Invalid level: {level}. Must be one of {valid_levels}"}), 400
+
+    try:
+        sentry_sdk.capture_message(message, level=level)
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
+
     return jsonify({"status": "captured", "level": level, "message": message})
 
 
