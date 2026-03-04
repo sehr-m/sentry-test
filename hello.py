@@ -29,6 +29,16 @@ logging_integration = LoggingIntegration(
     event_level=logging.ERROR  # Send errors as events
 )
 
+def enrich_event(event, hint):
+    """Hook to enrich or filter events before sending to Sentry."""
+    try:
+        if not isinstance(event.get("extra"), dict):
+            event["extra"] = {}
+        event["extra"]["custom_enrichment"] = "Added by before_send hook"
+    except Exception:
+        pass
+    return event
+
 sentry_sdk.init(
     dsn=SENTRY_DSN,
     integrations=[
@@ -38,26 +48,18 @@ sentry_sdk.init(
     # Performance Monitoring
     traces_sample_rate=1.0,  # Capture 100% of transactions for testing
     profiles_sample_rate=1.0,  # Profile 100% of sampled transactions
-    
+
     # Release tracking
     release=os.getenv("SENTRY_RELEASE", "sentry-test@1.0.0"),
     environment=os.getenv("SENTRY_ENVIRONMENT", "development"),
-    
+
     # Additional options
     send_default_pii=True,  # Send user data (be careful in production)
     attach_stacktrace=True,  # Attach stack traces to messages
-    
-    # Before send hook for filtering/enriching events
-    before_send=lambda event, hint: enrich_event(event, hint),
-)
 
-def enrich_event(event, hint):
-    """Hook to enrich or filter events before sending to Sentry."""
-    # Add custom context
-    if "extra" not in event:
-        event["extra"] = {}
-    event["extra"]["custom_enrichment"] = "Added by before_send hook"
-    return event
+    # Before send hook for filtering/enriching events
+    before_send=enrich_event,
+)
 
 # =============================================================================
 # FLASK APP SETUP
@@ -122,11 +124,6 @@ def set_sentry_user():
 def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
-
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
 
 
 @app.route("/api/visitors", methods=["GET"])
