@@ -281,8 +281,20 @@ def message_capture():
     """Capture a message manually (not an error)."""
     level = request.args.get("level", "info")
     message = request.args.get("message", "Test message from Sentry test app")
-    
-    sentry_sdk.capture_message(message, level=level)
+
+    valid_levels = ("fatal", "critical", "error", "warning", "info", "debug")
+    if level not in valid_levels:
+        return jsonify({
+            "status": "error",
+            "error": f"Invalid level '{level}'. Must be one of: {', '.join(valid_levels)}"
+        }), 400
+
+    try:
+        sentry_sdk.capture_message(message, level=level)
+    except Exception as e:
+        logger.warning(f"Failed to capture message: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
+
     return jsonify({"status": "captured", "level": level, "message": message})
 
 
