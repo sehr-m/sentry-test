@@ -53,6 +53,13 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
+    # Filter out internal Sentry SDK debug events (e.g. DebugError from Snuba)
+    exc_info = hint.get("exc_info")
+    if exc_info:
+        exc_type = exc_info[0]
+        if exc_type and exc_type.__name__ == "DebugError":
+            return None
+
     # Add custom context
     if "extra" not in event:
         event["extra"] = {}
@@ -655,4 +662,4 @@ if __name__ == "__main__":
 ║  • GET  /api/sentry/test     - Quick Sentry test                  ║
 ╚═══════════════════════════════════════════════════════════════════╝
     """)
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
