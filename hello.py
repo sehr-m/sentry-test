@@ -53,6 +53,17 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
+    # Filter out Sentry SDK internal debug events (e.g. DebugError "debug2")
+    # These are emitted during SDK initialization when Flask debug reloader is active
+    if hint and "exc_info" in hint:
+        exc_type = hint["exc_info"][0]
+        if exc_type and exc_type.__name__ == "DebugError":
+            return None
+    # Also filter by message pattern for non-exception debug events
+    message = event.get("message", "") or event.get("logentry", {}).get("message", "")
+    if message and "Snuba debug test" in message:
+        return None
+
     # Add custom context
     if "extra" not in event:
         event["extra"] = {}
@@ -655,4 +666,4 @@ if __name__ == "__main__":
 ║  • GET  /api/sentry/test     - Quick Sentry test                  ║
 ╚═══════════════════════════════════════════════════════════════════╝
     """)
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port, debug=False)
