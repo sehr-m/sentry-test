@@ -53,10 +53,13 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
-    # Add custom context
-    if "extra" not in event:
-        event["extra"] = {}
-    event["extra"]["custom_enrichment"] = "Added by before_send hook"
+    try:
+        # Add custom context
+        if "extra" not in event:
+            event["extra"] = {}
+        event["extra"]["custom_enrichment"] = "Added by before_send hook"
+    except Exception:
+        pass
     return event
 
 # =============================================================================
@@ -279,9 +282,12 @@ def error_logged():
 @app.route("/api/messages/capture")
 def message_capture():
     """Capture a message manually (not an error)."""
+    valid_levels = ("fatal", "error", "warning", "info", "debug")
     level = request.args.get("level", "info")
+    if level not in valid_levels:
+        level = "info"
     message = request.args.get("message", "Test message from Sentry test app")
-    
+
     sentry_sdk.capture_message(message, level=level)
     return jsonify({"status": "captured", "level": level, "message": message})
 
