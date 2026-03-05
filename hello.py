@@ -44,6 +44,7 @@ sentry_sdk.init(
     environment=os.getenv("SENTRY_ENVIRONMENT", "development"),
     
     # Additional options
+    debug=False,  # Disable SDK debug mode to prevent internal debug events from being captured
     send_default_pii=True,  # Send user data (be careful in production)
     attach_stacktrace=True,  # Attach stack traces to messages
     
@@ -53,6 +54,19 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
+    # Filter out internal Sentry SDK debug events
+    if hint and "exc_info" in hint:
+        exc_type = hint["exc_info"][0]
+        if exc_type and "DebugError" in getattr(exc_type, "__name__", ""):
+            return None
+
+    exception_values = (event.get("exception") or {}).get("values") or []
+    for exc in exception_values:
+        exc_type = exc.get("type", "")
+        exc_value = exc.get("value", "")
+        if "DebugError" in exc_type or "Snuba debug" in exc_value:
+            return None
+
     # Add custom context
     if "extra" not in event:
         event["extra"] = {}
