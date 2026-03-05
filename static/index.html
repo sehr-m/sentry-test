@@ -759,8 +759,8 @@
                     release: "sentry-test-frontend@1.0.0",
                     environment: "development",
                     
-                    // Debug mode for testing
-                    debug: true,
+                    // Debug mode disabled to prevent Sentry SDK internal debug messages from being captured as errors
+                    debug: false,
                     
                     // Before send hook
                     beforeSend(event, hint) {
