@@ -123,12 +123,6 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
-
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
     """Get all visitors from database."""
@@ -282,29 +276,37 @@ def message_capture():
     level = request.args.get("level", "info")
     message = request.args.get("message", "Test message from Sentry test app")
     
-    sentry_sdk.capture_message(message, level=level)
-    return jsonify({"status": "captured", "level": level, "message": message})
+    try:
+        event_id = sentry_sdk.capture_message(message, level=level)
+        return jsonify({"status": "captured", "level": level, "message": message, "event_id": str(event_id)})
+    except Exception as e:
+        logger.error(f"Failed to capture message: {e}")
+        return jsonify({"status": "error", "error": str(e), "level": level, "message": message}), 500
 
 
 @app.route("/api/messages/event")
 def message_event():
     """Capture a fully customized event."""
-    event_id = sentry_sdk.capture_event({
-        "message": "Custom event with all the bells and whistles",
-        "level": "warning",
-        "tags": {
-            "feature": "custom_events",
-            "test_type": "manual"
-        },
-        "extra": {
-            "custom_data": {
-                "items": [1, 2, 3],
-                "metadata": {"source": "test_endpoint"}
-            }
-        },
-        "fingerprint": ["custom-event-fingerprint"]
-    })
-    return jsonify({"status": "captured", "event_id": str(event_id)})
+    try:
+        event_id = sentry_sdk.capture_event({
+            "message": "Custom event with all the bells and whistles",
+            "level": "warning",
+            "tags": {
+                "feature": "custom_events",
+                "test_type": "manual"
+            },
+            "extra": {
+                "custom_data": {
+                    "items": [1, 2, 3],
+                    "metadata": {"source": "test_endpoint"}
+                }
+            },
+            "fingerprint": ["custom-event-fingerprint"]
+        })
+        return jsonify({"status": "captured", "event_id": str(event_id)})
+    except Exception as e:
+        logger.error(f"Failed to capture event: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
 
 
 # =============================================================================
@@ -476,19 +478,23 @@ def context_rich():
 @app.route("/api/scope/isolated")
 def scope_isolated():
     """Demonstrate isolated scope usage."""
-    # This scope only affects this specific capture
-    with sentry_sdk.push_scope() as scope:
-        scope.set_tag("isolated", "true")
-        scope.set_extra("scope_type", "pushed")
-        scope.set_level("warning")
-        scope.set_context("isolated_context", {"data": "only in this scope"})
+    try:
+        # This scope only affects this specific capture
+        with sentry_sdk.push_scope() as scope:
+            scope.set_tag("isolated", "true")
+            scope.set_extra("scope_type", "pushed")
+            scope.set_level("warning")
+            scope.set_context("isolated_context", {"data": "only in this scope"})
+            
+            sentry_sdk.capture_message("Message with isolated scope")
         
-        sentry_sdk.capture_message("Message with isolated scope")
-    
-    # This capture won't have the isolated scope data
-    sentry_sdk.capture_message("Message without isolated scope")
-    
-    return jsonify({"status": "both messages captured"})
+        # This capture won't have the isolated scope data
+        sentry_sdk.capture_message("Message without isolated scope")
+        
+        return jsonify({"status": "both messages captured"})
+    except Exception as e:
+        logger.error(f"Failed to capture scoped messages: {e}")
+        return jsonify({"status": "error", "error": str(e)}), 500
 
 
 # =============================================================================
@@ -582,13 +588,17 @@ def feedback_submit():
     event_id = data.get("event_id")
     
     if event_id:
-        sentry_sdk.capture_user_feedback({
-            "event_id": event_id,
-            "name": data.get("name", "Anonymous"),
-            "email": data.get("email", "anonymous@example.com"),
-            "comments": data.get("comments", "No comment provided")
-        })
-        return jsonify({"status": "feedback submitted"})
+        try:
+            sentry_sdk.capture_user_feedback({
+                "event_id": event_id,
+                "name": data.get("name", "Anonymous"),
+                "email": data.get("email", "anonymous@example.com"),
+                "comments": data.get("comments", "No comment provided")
+            })
+            return jsonify({"status": "feedback submitted"})
+        except Exception as e:
+            logger.error(f"Failed to submit feedback: {e}")
+            return jsonify({"status": "error", "error": str(e)}), 500
     
     return jsonify({"error": "event_id required"}), 400
 
