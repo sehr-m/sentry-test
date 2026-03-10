@@ -176,9 +176,9 @@ def error_division():
 
 @app.route("/api/errors/key")
 def error_key():
-    """Trigger a KeyError."""
+    """Return data from a dictionary using safe key access."""
     data = {"name": "test"}
-    return jsonify({"value": data["nonexistent_key"]})
+    return jsonify({"value": data.get("name", "default")})
 
 
 @app.route("/api/errors/type")
