@@ -29,6 +29,14 @@ logging_integration = LoggingIntegration(
     event_level=logging.ERROR  # Send errors as events
 )
 
+def enrich_event(event, hint):
+    """Hook to enrich or filter events before sending to Sentry."""
+    # Add custom context
+    if "extra" not in event:
+        event["extra"] = {}
+    event["extra"]["custom_enrichment"] = "Added by before_send hook"
+    return event
+
 sentry_sdk.init(
     dsn=SENTRY_DSN,
     integrations=[
@@ -50,14 +58,6 @@ sentry_sdk.init(
     # Before send hook for filtering/enriching events
     before_send=lambda event, hint: enrich_event(event, hint),
 )
-
-def enrich_event(event, hint):
-    """Hook to enrich or filter events before sending to Sentry."""
-    # Add custom context
-    if "extra" not in event:
-        event["extra"] = {}
-    event["extra"]["custom_enrichment"] = "Added by before_send hook"
-    return event
 
 # =============================================================================
 # FLASK APP SETUP
