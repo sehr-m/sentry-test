@@ -466,7 +466,11 @@ def context_rich():
         "active_connections": 12
     })
     
-    raise Exception("Error with rich context!")
+    try:
+        raise Exception("Error with rich context!")
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"status": "error_captured", "message": str(e)})
 
 
 # =============================================================================
