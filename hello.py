@@ -425,7 +425,11 @@ def breadcrumbs_trail():
         level="warning"
     )
     
-    raise Exception("Error with breadcrumb trail!")
+    try:
+        raise Exception("Error with breadcrumb trail!")
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"status": "error captured", "error": str(e)}), 500
 
 
 # =============================================================================
