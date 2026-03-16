@@ -53,6 +53,13 @@ sentry_sdk.init(
 
 def enrich_event(event, hint):
     """Hook to enrich or filter events before sending to Sentry."""
+    # Filter out HTTP client errors (4xx) - these are expected responses, not application errors
+    if "exc_info" in hint:
+        exc_type, exc_value, tb = hint["exc_info"]
+        from werkzeug.exceptions import HTTPException
+        if isinstance(exc_value, HTTPException) and 400 <= exc_value.code < 500:
+            return None
+
     # Add custom context
     if "extra" not in event:
         event["extra"] = {}
