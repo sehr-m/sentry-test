@@ -123,11 +123,6 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
 
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
@@ -227,11 +222,16 @@ def error_memory():
 @app.route("/api/errors/http/<int:status_code>")
 def error_http(status_code):
     """Trigger HTTP errors (4xx, 5xx)."""
+    from werkzeug.exceptions import HTTPException
     sentry_sdk.set_context("http_error", {
         "requested_status": status_code,
         "description": f"Intentionally triggered HTTP {status_code}"
     })
-    abort(status_code)
+    try:
+        abort(status_code)
+    except HTTPException as e:
+        sentry_sdk.capture_exception(e)
+        raise
 
 
 @app.route("/api/errors/custom")
