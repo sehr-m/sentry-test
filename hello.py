@@ -269,7 +269,7 @@ def error_logged():
     logger.info("This is an info message (breadcrumb)")
     logger.warning("This is a warning message (breadcrumb)")
     logger.error("This is an error message - should create a Sentry event!")
-    return jsonify({"status": "logged"})
+    return jsonify({"status": "error", "message": "Logged error sent to Sentry"}), 500
 
 
 # =============================================================================
