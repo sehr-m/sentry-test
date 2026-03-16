@@ -256,11 +256,15 @@ def error_chained():
     """Trigger chained exceptions to test exception chains."""
     try:
         try:
-            raise ValueError("Original error")
-        except ValueError as e:
-            raise RuntimeError("Second level error") from e
-    except RuntimeError as e:
-        raise Exception("Third level error - the final exception") from e
+            try:
+                raise ValueError("Original error")
+            except ValueError as e:
+                raise RuntimeError("Second level error") from e
+        except RuntimeError as e:
+            raise Exception("Third level error - the final exception") from e
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"error": "chained", "message": str(e)}), 500
 
 
 @app.route("/api/errors/logged")
