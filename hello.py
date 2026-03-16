@@ -191,8 +191,12 @@ def error_type():
 @app.route("/api/errors/attribute")
 def error_attribute():
     """Trigger an AttributeError."""
-    obj = None
-    return jsonify({"value": obj.nonexistent_method()})
+    try:
+        obj = None
+        obj.nonexistent_method()
+    except AttributeError as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"error": "AttributeError captured", "detail": str(e)})
 
 
 @app.route("/api/errors/index")
