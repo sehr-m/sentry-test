@@ -231,7 +231,11 @@ def error_http(status_code):
         "requested_status": status_code,
         "description": f"Intentionally triggered HTTP {status_code}"
     })
-    abort(status_code)
+    try:
+        abort(status_code)
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        raise
 
 
 @app.route("/api/errors/custom")
