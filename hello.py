@@ -197,9 +197,12 @@ def error_attribute():
 
 @app.route("/api/errors/index")
 def error_index():
-    """Trigger an IndexError."""
+    """Safely access a list element with bounds checking."""
     my_list = [1, 2, 3]
-    return jsonify({"value": my_list[100]})
+    index = 100
+    if index < len(my_list):
+        return jsonify({"value": my_list[index]})
+    return jsonify({"error": f"Index {index} out of range for list of length {len(my_list)}"}), 400
 
 
 @app.route("/api/errors/value")
