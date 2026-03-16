@@ -123,7 +123,7 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
+@app.route("/hello")
 def hello_world():
     1/0  # raises an error
     return "<p>Hello, World!</p>"
@@ -248,7 +248,11 @@ def error_custom():
     sentry_sdk.set_tag("custom_error", "true")
     sentry_sdk.set_extra("random_data", {"key": "value", "number": 42})
     
-    raise CustomSentryTestError("This is a custom error with rich context!")
+    try:
+        raise CustomSentryTestError("This is a custom error with rich context!")
+    except CustomSentryTestError as e:
+        event_id = sentry_sdk.capture_exception(e)
+        return jsonify({"error": str(e), "event_id": str(event_id)}), 500
 
 
 @app.route("/api/errors/chained")
