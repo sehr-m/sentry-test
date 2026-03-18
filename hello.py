@@ -163,12 +163,7 @@ def error_unhandled():
         message="About to trigger unhandled exception",
         level="warning"
     )
-    try:
-        raise Exception("This is an unhandled exception for Sentry testing!")
-    except Exception as e:
-        event_id = sentry_sdk.capture_exception(e)
-        sentry_sdk.flush(timeout=5)
-        return jsonify({"error": "unhandled exception", "sentry_event_id": str(event_id)}), 500
+    raise Exception("This is an unhandled exception for Sentry testing!")
 
 
 @app.route("/api/errors/division")
