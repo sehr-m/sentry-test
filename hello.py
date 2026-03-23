@@ -503,7 +503,12 @@ def fingerprint_custom():
     with sentry_sdk.push_scope() as scope:
         # All errors with same fingerprint will be grouped together
         scope.fingerprint = ["custom-group", group]
-        raise Exception(f"Error in group: {group}")
+        try:
+            raise Exception(f"Error in group: {group}")
+        except Exception as e:
+            event_id = sentry_sdk.capture_exception(e)
+            sentry_sdk.flush(timeout=5)
+            return jsonify({"error": f"fingerprint group {group}", "sentry_event_id": str(event_id)}), 500
 
 
 @app.route("/api/fingerprint/transaction")
