@@ -506,15 +506,22 @@ def fingerprint_custom():
         raise Exception(f"Error in group: {group}")
 
 
+SUPPORTED_TRANSACTION_TYPES = {"payment", "refund", "transfer"}
+
+
 @app.route("/api/fingerprint/transaction")
 def fingerprint_transaction():
     """Custom fingerprint based on transaction type."""
     transaction_type = request.args.get("type", "payment")
-    
-    with sentry_sdk.push_scope() as scope:
-        scope.fingerprint = ["transaction-error", transaction_type]
-        scope.set_tag("transaction_type", transaction_type)
-        raise Exception(f"Transaction failed: {transaction_type}")
+
+    if transaction_type not in SUPPORTED_TRANSACTION_TYPES:
+        with sentry_sdk.push_scope() as scope:
+            scope.fingerprint = ["transaction-error", transaction_type]
+            scope.set_tag("transaction_type", transaction_type)
+            raise Exception(f"Transaction failed: {transaction_type}")
+
+    sentry_sdk.set_tag("transaction_type", transaction_type)
+    return jsonify({"status": "success", "transaction_type": transaction_type})
 
 
 # =============================================================================
