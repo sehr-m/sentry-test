@@ -183,8 +183,8 @@ def error_key():
 
 @app.route("/api/errors/type")
 def error_type():
-    """Trigger a TypeError."""
-    result = "string" + 42
+    """Demonstrate string and integer concatenation."""
+    result = "string" + str(42)
     return jsonify({"result": result})
 
 
