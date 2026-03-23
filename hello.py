@@ -510,7 +510,12 @@ def fingerprint_custom():
 def fingerprint_transaction():
     """Custom fingerprint based on transaction type."""
     transaction_type = request.args.get("type", "payment")
-    
+    supported_types = {"payment", "refund", "transfer", "withdrawal"}
+
+    if transaction_type in supported_types:
+        sentry_sdk.set_tag("transaction_type", transaction_type)
+        return jsonify({"status": "success", "transaction_type": transaction_type})
+
     with sentry_sdk.push_scope() as scope:
         scope.fingerprint = ["transaction-error", transaction_type]
         scope.set_tag("transaction_type", transaction_type)
