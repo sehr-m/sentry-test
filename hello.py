@@ -170,7 +170,12 @@ def error_unhandled():
 def error_division():
     """Trigger a ZeroDivisionError."""
     sentry_sdk.set_tag("error_type", "division_by_zero")
-    result = 1 / 0
+    try:
+        result = 1 / 0
+    except ZeroDivisionError as e:
+        event_id = sentry_sdk.capture_exception(e)
+        sentry_sdk.flush(timeout=5)
+        return jsonify({"error": "division by zero", "sentry_event_id": str(event_id)}), 500
     return jsonify({"result": result})
 
 
