@@ -205,7 +205,12 @@ def error_index():
 @app.route("/api/errors/value")
 def error_value():
     """Trigger a ValueError."""
-    return jsonify({"value": int("not_a_number")})
+    try:
+        value = int("not_a_number")
+    except ValueError as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"error": "ValueError", "message": str(e)}), 400
+    return jsonify({"value": value})
 
 
 @app.route("/api/errors/recursion")
