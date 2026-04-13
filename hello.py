@@ -36,8 +36,8 @@ sentry_sdk.init(
         logging_integration,
     ],
     # Performance Monitoring
-    traces_sample_rate=1.0,  # Capture 100% of transactions for testing
-    profiles_sample_rate=1.0,  # Profile 100% of sampled transactions
+    traces_sample_rate=0.2,  # Sample 20% of transactions to avoid quota overconsumption
+    profiles_sample_rate=0.2,  # Profile 20% of sampled transactions
     
     # Release tracking
     release=os.getenv("SENTRY_RELEASE", "sentry-test@1.0.0"),
