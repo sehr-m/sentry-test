@@ -525,10 +525,14 @@ def fingerprint_transaction():
 def async_thread():
     """Error in a separate thread."""
     def thread_function():
-        with sentry_sdk.push_scope() as scope:
-            scope.set_tag("thread", "background")
-            time.sleep(0.5)
-            raise Exception("Error from background thread!")
+        try:
+            with sentry_sdk.push_scope() as scope:
+                scope.set_tag("thread", "background")
+                time.sleep(0.5)
+                raise Exception("Error from background thread!")
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+            sentry_sdk.flush(timeout=5)
     
     thread = threading.Thread(target=thread_function)
     thread.start()
