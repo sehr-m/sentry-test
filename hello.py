@@ -523,17 +523,21 @@ def fingerprint_transaction():
 
 @app.route("/api/async/thread")
 def async_thread():
-    """Error in a separate thread."""
+    """Demonstrate background thread processing."""
     def thread_function():
-        with sentry_sdk.push_scope() as scope:
-            scope.set_tag("thread", "background")
-            time.sleep(0.5)
-            raise Exception("Error from background thread!")
+        try:
+            with sentry_sdk.push_scope() as scope:
+                scope.set_tag("thread", "background")
+                time.sleep(0.5)
+                logger.info("Background thread completed successfully")
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+            sentry_sdk.flush(timeout=5)
     
     thread = threading.Thread(target=thread_function)
     thread.start()
     
-    return jsonify({"status": "thread started", "note": "Error will be captured async"})
+    return jsonify({"status": "thread started", "note": "Background thread processing"})
 
 
 # =============================================================================
