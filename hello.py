@@ -141,7 +141,9 @@ def get_visitor():
 @app.route("/api/visitors", methods=["POST"])
 def put_visitor():
     """Add a new visitor to database."""
-    user = request.json["name"]
+    user = request.json.get("name")
+    if not user:
+        return jsonify({"error": "name is required"}), 400
     data = {"name": user}
     if client and db:
         my_document = db.create_document(data)
@@ -178,7 +180,8 @@ def error_division():
 def error_key():
     """Trigger a KeyError."""
     data = {"name": "test"}
-    return jsonify({"value": data["nonexistent_key"]})
+    value = data.get("missing_key", None)
+    return jsonify({"value": value})
 
 
 @app.route("/api/errors/type")
