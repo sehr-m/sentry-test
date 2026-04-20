@@ -514,7 +514,12 @@ def fingerprint_transaction():
     with sentry_sdk.push_scope() as scope:
         scope.fingerprint = ["transaction-error", transaction_type]
         scope.set_tag("transaction_type", transaction_type)
-        raise Exception(f"Transaction failed: {transaction_type}")
+        try:
+            raise Exception(f"Transaction failed: {transaction_type}")
+        except Exception as e:
+            event_id = sentry_sdk.capture_exception(e)
+            sentry_sdk.flush(timeout=5)
+            return jsonify({"error": f"transaction {transaction_type}", "sentry_event_id": str(event_id)}), 500
 
 
 # =============================================================================
