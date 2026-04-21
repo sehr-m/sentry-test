@@ -98,6 +98,16 @@ def set_sentry_user():
     """Set user context for all requests."""
     # In a real app, this would come from authentication
     user_id = request.headers.get("X-User-ID", "anonymous")
+
+    # Validate user ID format: must be a valid integer or "anonymous".
+    # Without this check a non-numeric ID propagates to user-lookup code
+    # that calls int(), raising ValueError → RuntimeError.
+    if user_id != "anonymous":
+        try:
+            int(user_id)
+        except (ValueError, TypeError):
+            user_id = "anonymous"
+
     sentry_sdk.set_user({
         "id": user_id,
         "email": f"{user_id}@example.com",
