@@ -123,12 +123,6 @@ def root():
     """Serve the main test page."""
     return app.send_static_file("index.html")
 
-@app.route("/")
-def hello_world():
-    1/0  # raises an error
-    return "<p>Hello, World!</p>"
-
-
 @app.route("/api/visitors", methods=["GET"])
 def get_visitor():
     """Get all visitors from database."""
