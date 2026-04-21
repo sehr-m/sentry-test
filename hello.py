@@ -12,6 +12,7 @@ import os
 import json
 import logging
 import random
+import re
 import time
 import threading
 
@@ -98,6 +99,12 @@ def set_sentry_user():
     """Set user context for all requests."""
     # In a real app, this would come from authentication
     user_id = request.headers.get("X-User-ID", "anonymous")
+
+    # Validate user ID format before lookup to prevent ValueError
+    # from malformed values (only alphanumeric, hyphens, underscores allowed)
+    if not user_id or not re.match(r'^[a-zA-Z0-9_-]+$', user_id):
+        user_id = "anonymous"
+
     sentry_sdk.set_user({
         "id": user_id,
         "email": f"{user_id}@example.com",
