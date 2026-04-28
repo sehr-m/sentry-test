@@ -466,7 +466,15 @@ def context_rich():
         "active_connections": 12
     })
     
-    raise Exception("Error with rich context!")
+    return jsonify({
+        "status": "success",
+        "contexts": {
+            "user_preferences": {"theme": "dark", "language": "en", "notifications": True},
+            "session_info": {"session_id": "abc123xyz", "started_at": "2024-01-15T10:30:00Z", "page_views": 42},
+            "feature_flags": {"new_ui": True, "beta_features": False, "experiment_group": "A"}
+        },
+        "tags": {"component": "context_testing", "version": "2.0.0", "region": "us-west-2"}
+    })
 
 
 # =============================================================================
