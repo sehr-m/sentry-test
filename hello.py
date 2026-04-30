@@ -485,10 +485,7 @@ def scope_isolated():
         
         sentry_sdk.capture_message("Message with isolated scope")
     
-    # This capture won't have the isolated scope data
-    sentry_sdk.capture_message("Message without isolated scope")
-    
-    return jsonify({"status": "both messages captured"})
+    return jsonify({"status": "message captured with isolated scope"})
 
 
 # =============================================================================
