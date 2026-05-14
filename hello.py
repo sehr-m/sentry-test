@@ -553,8 +553,16 @@ def sensitive_scrubbed():
         "api_key": "sk_live_abc123",  # Should be scrubbed
         "safe_data": "This should appear"
     })
-    
-    raise Exception("Error with potentially sensitive data")
+
+    try:
+        raise Exception("Error with potentially sensitive data")
+    except Exception as e:
+        event_id = sentry_sdk.capture_exception(e)
+        sentry_sdk.flush(timeout=5)
+        return jsonify({
+            "error": "sensitive data error",
+            "sentry_event_id": str(event_id) if event_id is not None else ""
+        }), 500
 
 
 # =============================================================================
