@@ -561,7 +561,7 @@ def sensitive_scrubbed():
         sentry_sdk.flush(timeout=5)
         return jsonify({
             "error": "sensitive data error",
-            "sentry_event_id": str(event_id)
+            "sentry_event_id": str(event_id) if event_id is not None else ""
         }), 500
 
 
