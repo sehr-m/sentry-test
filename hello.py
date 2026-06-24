@@ -582,12 +582,14 @@ def feedback_submit():
     event_id = data.get("event_id")
     
     if event_id:
-        sentry_sdk.capture_user_feedback({
-            "event_id": event_id,
-            "name": data.get("name", "Anonymous"),
-            "email": data.get("email", "anonymous@example.com"),
-            "comments": data.get("comments", "No comment provided")
-        })
+        sentry_sdk.capture_feedback(
+            {
+                "name": data.get("name", "Anonymous"),
+                "contact_email": data.get("email", "anonymous@example.com"),
+                "message": data.get("comments", "No comment provided"),
+            },
+            associated_event_id=event_id,
+        )
         return jsonify({"status": "feedback submitted"})
     
     return jsonify({"error": "event_id required"}), 400
