@@ -343,6 +343,15 @@ def performance_nested():
     return jsonify({"status": "completed", "spans": "nested"})
 
 
+def buggy_database_query(filters):
+    """Query the database with the given filters and return the result for 'charlie'.
+
+    Uses dict.get() for safe access since the key 'charlie' is not guaranteed
+    to be present in the filters dictionary.
+    """
+    return filters.get('charlie')
+
+
 @app.route("/api/performance/database")
 def performance_database():
     """Simulate database operations with spans."""
