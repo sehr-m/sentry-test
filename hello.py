@@ -554,7 +554,11 @@ def sensitive_scrubbed():
         "safe_data": "This should appear"
     })
     
-    raise Exception("Error with potentially sensitive data")
+    try:
+        raise Exception("Error with potentially sensitive data")
+    except Exception as e:
+        event_id = sentry_sdk.capture_exception(e)
+        return jsonify({"status": "error captured", "event_id": str(event_id)})
 
 
 # =============================================================================
