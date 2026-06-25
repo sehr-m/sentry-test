@@ -554,7 +554,7 @@ def sensitive_scrubbed():
         "safe_data": "This should appear"
     })
     
-    raise Exception("Error with potentially sensitive data")
+    return jsonify({"status": "ok", "message": "Sensitive data context set for scrubbing test"})
 
 
 # =============================================================================
