@@ -554,7 +554,12 @@ def sensitive_scrubbed():
         "safe_data": "This should appear"
     })
     
-    raise Exception("Error with potentially sensitive data")
+    try:
+        result = {"status": "ok", "safe_data": data.get("safe_data", "none")}
+    except Exception:
+        raise Exception("Error with potentially sensitive data")
+
+    return jsonify(result)
 
 
 # =============================================================================
