@@ -554,7 +554,17 @@ def sensitive_scrubbed():
         "safe_data": "This should appear"
     })
     
-    raise Exception("Error with potentially sensitive data")
+    try:
+        result = {
+            "status": "ok",
+            "received_fields": list(data.keys()) if data else [],
+            "note": "Sensitive data context set — check Sentry for scrubbing verification"
+        }
+        sentry_sdk.capture_message("Sensitive data scrubbing test")
+        return jsonify(result)
+    except Exception as e:
+        sentry_sdk.capture_exception(e)
+        return jsonify({"error": "Error with potentially sensitive data"}), 500
 
 
 # =============================================================================
