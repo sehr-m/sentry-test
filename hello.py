@@ -498,12 +498,17 @@ def scope_isolated():
 @app.route("/api/fingerprint/custom")
 def fingerprint_custom():
     """Errors with custom fingerprint for grouping."""
-    group = request.args.get("group", "default")
+    group = request.args.get("group", "auth")
     
     with sentry_sdk.push_scope() as scope:
         # All errors with same fingerprint will be grouped together
         scope.fingerprint = ["custom-group", group]
-        raise Exception(f"Error in group: {group}")
+        try:
+            raise Exception(f"Error in group: {group}")
+        except Exception as e:
+            sentry_sdk.capture_exception(e)
+    
+    return jsonify({"status": "error captured", "group": group, "fingerprint": ["custom-group", group]})
 
 
 @app.route("/api/fingerprint/transaction")
